@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  password      String        
+  name          String        
+  role          UserRole      @default(APPLICANT)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  resumes       Resume[]
+  resumeLogs    ResumeLog[] 
+  refreshToken  RefreshToken?
+
+  @@map("users")
+}
+
+enum UserRole {
+  APPLICANT
+  RECRUITER
+}
+
+model Resume {
+  id                  Int                 @id @default(autoincrement())
+  authorId            Int                 @map("author_id")
+  title               String             
+  content             String              @db.Text
+  applicationStatus   ApplicationStatus   @default(APPLY) @map("application_status")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  author              User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  resumeLogs          ResumeLog[]
+
+  @@map("resumes")
+}
+
+enum ApplicationStatus {
+  APPLY
+  DROP 
+  PASS
+  INTERVIEW1
+  INTERVIEW2
+  FINAL_PASS
+}
+
+model ResumeLog {
+  id                Int                 @id @default(autoincrement())
+  resumeId          Int                 @map("resume_id")
+  recruiterId       Int                 @map("recruiter_id")
+  prevStatus        ApplicationStatus   @map("prev_status")
+  currStatus        ApplicationStatus   @map("curr_status")
+  reason            String              @db.Text
+  changedAt         DateTime            @default(now()) @map("changed_at")
+
+  resume            Resume              @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  recruiter         User                @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+
+  @@map("resume_logs")
+}
+
+model RefreshToken {
+  id            Int           @id @default(autoincrement())
+  userId        Int           @unique @map("user_id")
+  token         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt  @map("updated_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
