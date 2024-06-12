@@ -1,8 +1,7 @@
-import jwt from 'jsonwebtoken';
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { HttpError } from '../errors/http.error.js';
 import { MESSAGES } from '../constants/message.constant.js';
-import { ACCESS_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
-import { prisma } from '../utils/prisma.util.js';
+import { verifyAccessToken } from '../utils/auth.util.js';
+import { UsersService } from '../services/users.service.js';
 
 export const requireAccessToken = async (req, res, next) => {
   try {
@@ -10,56 +9,29 @@ export const requireAccessToken = async (req, res, next) => {
     const authorization = req.headers.authorization;
 
     // Authorization이 없는 경우
-    if (!authorization) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        status: HTTP_STATUS.UNAUTHORIZED,
-        message: MESSAGES.AUTH.COMMON.JWT.NO_TOKEN,
-      });
-    }
+    if (!authorization) throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.NO_TOKEN);
 
-    // JWT 표준 인증 형태와 일치하지 않는 경우
     const [type, accessToken] = authorization.split(' ');
 
-    if (type !== 'Bearer') {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        status: HTTP_STATUS.UNAUTHORIZED,
-        message: MESSAGES.AUTH.COMMON.JWT.NOT_SUPPORTED_TYPE,
-      });
-    }
+    // JWT 표준 인증 형태와 일치하지 않는 경우
+    if (type !== 'Bearer') throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.NOT_SUPPORTED_TYPE);
 
     // AccessToken이 없는 경우
-    if (!accessToken) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        status: HTTP_STATUS.UNAUTHORIZED,
-        message: MESSAGES.AUTH.COMMON.JWT.NO_TOKEN,
-      });
-    }
+    if (!accessToken) throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.NO_TOKEN);
 
-    const payload = jwt.verify(accessToken, ACCESS_TOKEN_SECRET_KEY);
+    const payload = verifyAccessToken(accessToken);
+    const { userId } = payload;
+    const usersService = new UsersService();
+    const user = await usersService.getMyInfo(userId);
 
     // Payload에 담긴 사용자 ID와 일치하는 사용자가 없는 경우
-    const { userId } = payload;
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    if (!user) throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.JWT.NO_USER);
 
-    if (!user) {
-      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
-        status: HTTP_STATUS.UNAUTHORIZED,
-        message: MESSAGES.AUTH.COMMON.JWT.NO_USER,
-      });
-    }
-
+    // req.user에 사용자 정보 넣어서 넘겨줌
     req.user = user;
     next();
+
+    // 에러 처리
   } catch (error) {
     next(error);
   }
