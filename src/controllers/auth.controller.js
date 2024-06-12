@@ -1,10 +1,4 @@
 import { AuthService } from '../services/auth.service.js';
-// import bcrypt from 'bcrypt';
-// import { requireRefreshToken } from '../middlewares/require-refresh-token.middleware.js';
-// import { prisma } from '../utils/prisma.util.js';
-// import { EMAIL_REGEX, SALT_ROUNDS } from '../constants.constant.js';
-// import { createAccessToken, createRefreshToken } from '../utils.util.js';
-// import { CustomError } from '../utils/custom-error.util.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 

@@ -2,8 +2,8 @@ import { UsersRepository } from '../repositories/users.repository.js';
 import { TokensRepository } from '../repositories/tokens.repository.js';
 import { CustomError } from '../utils/custom-error.util.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
-import bcrypt from 'bcrypt';
 import { MESSAGES } from '../constants/message.constant.js';
+import bcrypt from 'bcrypt';
 import { SALT_ROUNDS } from '../constants/auth.constant.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/auth.util.js';
 
