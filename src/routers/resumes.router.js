@@ -157,7 +157,7 @@ resumeRouter.patch('/:resumeId', requireRoles(['APPLICANT']), updateResumeValida
     if (!title && !content) throw new CustomError(HTTP_STATUS.BAD_REQUEST, '수정할 정보를 입력해 주세요.');
 
     // 3. DB에서 현재 로그인 한 사용자의 이력서 찾기 (resumeId is given)
-    const existedResume = await prisma.resumes.findUnique({
+    const existingResume = await prisma.resumes.findUnique({
       where: {
         id: +resumeId,
         authorId: userId,
@@ -165,7 +165,7 @@ resumeRouter.patch('/:resumeId', requireRoles(['APPLICANT']), updateResumeValida
     });
 
     // 4. 유효성 검증 및 에러 처리
-    if (!existedResume) throw new CustomError(HTTP_STATUS.NOT_FOUND, MESSAGES.RESUMES.COMMON.NOT_FOUND);
+    if (!existingResume) throw new CustomError(HTTP_STATUS.NOT_FOUND, MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 5. DB에서 해당 이력서 데이터 수정
     const updatedResume = await prisma.resumes.update({
@@ -200,7 +200,7 @@ resumeRouter.delete('/:resumeId', requireRoles(['APPLICANT']), async (req, res, 
     const { resumeId } = req.params;
 
     // 2. DB에서 현재 로그인 한 사용자의 이력서 찾기 (resumeId is given)
-    const existedResume = await prisma.resumes.findUnique({
+    const existingResume = await prisma.resumes.findUnique({
       where: {
         id: +resumeId,
         authorId: userId,
@@ -208,7 +208,7 @@ resumeRouter.delete('/:resumeId', requireRoles(['APPLICANT']), async (req, res, 
     });
 
     // 3. 유효성 검증 및 에러 처리
-    if (!existedResume) throw new CustomError(HTTP_STATUS.NOT_FOUND, MESSAGES.RESUMES.COMMON.NOT_FOUND);
+    if (!existingResume) throw new CustomError(HTTP_STATUS.NOT_FOUND, MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 4. DB에서 해당 이력서 데이터 삭제
     await prisma.resumes.delete({

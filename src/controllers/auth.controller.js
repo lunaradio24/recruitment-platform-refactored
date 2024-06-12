@@ -58,8 +58,8 @@ export class AuthController {
       // 인증 정보 가져오기
       const { id: userId } = req.user;
 
-      // Service Layer에 로그인 로직 요청
-      const tokens = await this.authService.signOut(userId);
+      // Service Layer에 로그아웃 로직 요청
+      await this.authService.signOut(userId);
 
       // 반환 정보
       return res.status(HTTP_STATUS.OK).json({
@@ -79,14 +79,14 @@ export class AuthController {
       // 인증 정보 가져오기
       const { id: userId } = req.user;
 
-      // Service Layer에 로그인 로직 요청
-      const tokens = await this.authService.signOut(userId);
+      // Service Layer에 토큰 재발급 로직 요청
+      const tokens = await this.authService.renewTokens(userId);
 
       // 반환 정보
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.AUTH.RENEW_TOKENS.SUCCEED,
-        data: { accessToken: newAccessToken, refreshToken: newRefreshToken },
+        data: tokens,
       });
 
       // 에러 처리
