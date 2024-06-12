@@ -34,7 +34,14 @@ export const requireRefreshToken = async (req, res, next) => {
     const { userId } = payload;
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      // omit: { password: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     // payload에 담긴 사용자 ID와 일치하는 사용자가 없는 경우

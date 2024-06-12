@@ -59,9 +59,14 @@ export class AuthService {
   };
 
   renewTokens = async (userId) => {
+    // 사용자 id로 조회되지 않는 경우
+    const user = await this.usersRepository.findUserById(userId);
+    if (!user) throw new CustomError(HTTP_STATUS.UNAUTHORIZED, MESSAGES.AUTH.COMMON.UNAUTHORIZED);
+
     // AccessToken, RefreshToken 재발급
-    const newAccessToken = generateAccessToken(userId);
-    const newRefreshToken = generateRefreshToken(userId);
+    const payload = { userId: user.id };
+    const newAccessToken = generateAccessToken(payload);
+    const newRefreshToken = generateRefreshToken(payload);
     const saltedToken = await bcrypt.hash(newRefreshToken, SALT_ROUNDS);
 
     // DB에 저장된 RefreshToken을 갱신
