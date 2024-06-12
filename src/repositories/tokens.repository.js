@@ -9,27 +9,24 @@ export class TokensRepository {
   };
 
   createRefreshToken = async (userId, refreshToken) => {
-    const createdToken = await prisma.refreshToken.create({
+    await prisma.refreshToken.create({
       data: {
         userId: userId,
         token: refreshToken,
       },
     });
-    return createdToken;
   };
 
   updateRefreshToken = async (userId, refreshToken) => {
-    const updatedToken = await prisma.refreshToken.update({
+    await prisma.refreshToken.update({
       where: { userId: userId },
       data: { token: refreshToken },
     });
-    return updatedToken;
   };
 
   deleteRefreshToken = async (userId) => {
-    const deletedToken = await prisma.refreshToken.delete({
+    await prisma.refreshToken.delete({
       where: { userId: userId },
     });
-    return deletedToken;
   };
 }

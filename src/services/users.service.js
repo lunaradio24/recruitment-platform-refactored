@@ -6,6 +6,7 @@ export class UsersService {
   getMyInfo = async (userId) => {
     const user = await this.usersRepository.findUserById(userId);
     return {
+      id: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
