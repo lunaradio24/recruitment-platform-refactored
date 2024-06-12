@@ -6,7 +6,7 @@ import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { REFRESH_TOKEN_SECRET_KEY } from '../constants/env.constant.js';
 
-const requireRefreshToken = async (req, res, next) => {
+export const requireRefreshToken = async (req, res, next) => {
   try {
     // 인증 정보 파싱
     const authorization = req.headers.authorization;
@@ -29,30 +29,33 @@ const requireRefreshToken = async (req, res, next) => {
       });
     }
 
-    // 3. 비즈니스 로직(데이터 처리)
-    //  - Payload에 담긴 사용자 ID를 이용하여 사용자 정보를 조회합니다.
-    const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET_KEY) ?? null;
+    // payload에 담긴 사용자 ID를 이용하여 사용자 정보 조회
+    const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET_KEY);
     const { userId } = payload;
-    const user = await prisma.users.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      // omit: { password: true },
+    });
 
-    //  - Payload에 담긴 사용자 ID와 일치하는 사용자가 없는 경우
+    // payload에 담긴 사용자 ID와 일치하는 사용자가 없는 경우
     if (!user) throw new CustomError(HTTP_STATUS.UNAUTHORIZED, MESSAGES.AUTH.COMMON.JWT.NO_USER);
 
-    //   - 사용자가 가지고 있는 RefreshToken이 DB에 저장된 것과 일치하는지 확인
-    const { token: savedRefreshToken } = await prisma.refreshTokens.findUnique({
+    // DB에 저장된 Refresh Token 조회
+    const { token: savedRefreshToken } = await prisma.refreshToken.findUnique({
       where: { userId: userId },
     });
+
+    // 사용자가 가지고 있는 Refresh Token과 비교
     const isPasswordMatched = await bcrypt.compare(refreshToken, savedRefreshToken);
     if (!isPasswordMatched) throw new CustomError(HTTP_STATUS.UNAUTHORIZED, MESSAGES.AUTH.COMMON.JWT.INVALID);
 
-    // 4. 반환 정보
+    // 반환 정보
     req.user = user;
     next();
 
     // 5. 발생한 에러는 catch로 받아서 다음 미들웨어에서 처리
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
-
-export { requireRefreshToken };

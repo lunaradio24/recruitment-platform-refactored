@@ -4,9 +4,7 @@ import { ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from '../constants/
 
 // Access Token을 생성하는 함수
 export const generateAccessToken = (payload) => {
-  console.log(payload);
   const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET_KEY, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
-  console.log(accessToken);
   return accessToken;
 };
 

@@ -39,7 +39,7 @@ export const requireAccessToken = async (req, res, next) => {
 
     // Payload에 담긴 사용자 ID와 일치하는 사용자가 없는 경우
     const { userId } = payload;
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       omit: { password: true },
     });
