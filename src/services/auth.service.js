@@ -1,9 +1,8 @@
 import { UsersRepository } from '../repositories/users.repository.js';
 import { TokensRepository } from '../repositories/tokens.repository.js';
-import { CustomError } from '../utils/custom-error.util.js';
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { compareWithHashed, generateAccessToken, generateRefreshToken, hash } from '../utils/auth.util.js';
+import { HttpError } from '../errors/http.error.js';
 
 export class AuthService {
   usersRepository = new UsersRepository();
@@ -12,7 +11,7 @@ export class AuthService {
   signUp = async (email, password, name) => {
     // 이메일이 중복 여부 확인
     const existingUser = await this.usersRepository.findUserByEmail(email);
-    if (existingUser) throw new CustomError(HTTP_STATUS.BAD_REQUEST, MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
+    if (existingUser) throw new HttpError.BadRequest(MESSAGES.AUTH.COMMON.EMAIL.DUPLICATED);
 
     // 비밀번호 해싱
     const hashedPassword = await hash(password);
@@ -32,7 +31,7 @@ export class AuthService {
     // 이메일로 조회되지 않거나 비밀번호가 일치하지 않는 경우
     const user = await this.usersRepository.findUserByEmail(email);
     const isPasswordMatched = user ? await compareWithHashed(password, user.password) : null;
-    if (!user || !isPasswordMatched) throw new CustomError(HTTP_STATUS.UNAUTHORIZED, MESSAGES.AUTH.COMMON.UNAUTHORIZED);
+    if (!user || !isPasswordMatched) throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
 
     // Access, Refresh Token 발급
     const payload = { userId: user.id };
@@ -59,7 +58,7 @@ export class AuthService {
   renewTokens = async (userId) => {
     // 사용자 id로 조회되지 않는 경우
     const user = await this.usersRepository.findUserById(userId);
-    if (!user) throw new CustomError(HTTP_STATUS.UNAUTHORIZED, MESSAGES.AUTH.COMMON.UNAUTHORIZED);
+    if (!user) throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
 
     // AccessToken, RefreshToken 재발급
     const payload = { userId: user.id };

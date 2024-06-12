@@ -6,7 +6,7 @@ export const userFlatter = function (obj) {
 
 // resume의 중복 객체를 평탄화하는 함수
 export const resumeFlatter = function (obj) {
-  const { author, ...rest } = obj;
+  const { author, authorId: _, ...rest } = obj;
   return { authorName: author.name, ...rest };
 };
 

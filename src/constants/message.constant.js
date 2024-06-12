@@ -59,6 +59,14 @@ export const MESSAGES = {
         REQUIRED: '자기소개를 입력해 주세요.',
         MIN_LENGTH: `자기소개는 ${MIN_RESUME_LENGTH}자 이상 작성해야 합니다.`,
       },
+      STATUS: {
+        REQUIRED: '변경하고자 하는 지원 상태를 입력해주세요.',
+        INVALID_TYPE: '유효하지 않은 지원 상태입니다.',
+        NOT_CHANGED: '변경할 지원 상태가 이전 상태와 동일합니다.',
+      },
+      REASON: {
+        REQUIRED: '지원 상태 변경 사유를 입력해주세요.',
+      },
       NOT_FOUND: '이력서가 존재하지 않습니다.',
     },
     CREATE: {

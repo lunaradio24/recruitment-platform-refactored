@@ -15,14 +15,11 @@ const errorHandler = (err, req, res, next) => {
       return res
         .status(HTTP_STATUS.UNAUTHORIZED)
         .json({ status: HTTP_STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.COMMON.JWT.EXPIRED });
+
     case 'JsonWebTokenError':
       return res
         .status(HTTP_STATUS.UNAUTHORIZED)
         .json({ status: HTTP_STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.COMMON.JWT.INVALID });
-
-    // CustomError로 받은 에러 처리
-    case 'CustomError':
-      return res.status(err.code).json({ status: err.code, message: err.message });
 
     // HttpError와 그 밖의 예상치 못한 에러 처리
     default:
