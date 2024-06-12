@@ -25,7 +25,7 @@ resumeRouter.post('/', requireRoles(['APPLICANT']), createResumeValidator, async
     if (content.length < 150) throw new CustomError(HTTP_STATUS.BAD_REQUEST, '자기소개는 150자 이상 작성해야 합니다.');
 
     // 3. DB에 이력서 데이터 생성
-    const createdResume = await prisma.resumes.create({
+    const createdResume = await prisma.resume.create({
       data: {
         authorId: userId,
         title,
@@ -70,7 +70,7 @@ resumeRouter.get('/', async (req, res, next) => {
     }
 
     // 2. DB에서 조건에 맞는 이력서 찾기
-    const resumes = await prisma.resumes.findMany({
+    const resumes = await prisma.resume.findMany({
       where: {
         authorId: authorId,
         applicationStatus: status,
@@ -115,7 +115,7 @@ resumeRouter.get('/:resumeId', async (req, res, next) => {
     const authorId = role !== 'RECRUITER' ? userId : undefined;
 
     // 2. DB에서 조건에 맞는 이력서 찾기
-    const resume = await prisma.resumes.findUnique({
+    const resume = await prisma.resume.findUnique({
       where: {
         id: +resumeId,
         authorId: authorId,
@@ -157,7 +157,7 @@ resumeRouter.patch('/:resumeId', requireRoles(['APPLICANT']), updateResumeValida
     if (!title && !content) throw new CustomError(HTTP_STATUS.BAD_REQUEST, '수정할 정보를 입력해 주세요.');
 
     // 3. DB에서 현재 로그인 한 사용자의 이력서 찾기 (resumeId is given)
-    const existingResume = await prisma.resumes.findUnique({
+    const existingResume = await prisma.resume.findUnique({
       where: {
         id: +resumeId,
         authorId: userId,
@@ -168,7 +168,7 @@ resumeRouter.patch('/:resumeId', requireRoles(['APPLICANT']), updateResumeValida
     if (!existingResume) throw new CustomError(HTTP_STATUS.NOT_FOUND, MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 5. DB에서 해당 이력서 데이터 수정
-    const updatedResume = await prisma.resumes.update({
+    const updatedResume = await prisma.resume.update({
       where: {
         id: +resumeId,
         authorId: userId, // 없어도 되지만 만약을 대비
@@ -200,7 +200,7 @@ resumeRouter.delete('/:resumeId', requireRoles(['APPLICANT']), async (req, res, 
     const { resumeId } = req.params;
 
     // 2. DB에서 현재 로그인 한 사용자의 이력서 찾기 (resumeId is given)
-    const existingResume = await prisma.resumes.findUnique({
+    const existingResume = await prisma.resume.findUnique({
       where: {
         id: +resumeId,
         authorId: userId,
@@ -211,7 +211,7 @@ resumeRouter.delete('/:resumeId', requireRoles(['APPLICANT']), async (req, res, 
     if (!existingResume) throw new CustomError(HTTP_STATUS.NOT_FOUND, MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 4. DB에서 해당 이력서 데이터 삭제
-    await prisma.resumes.delete({
+    await prisma.resume.delete({
       where: {
         id: +resumeId,
         authorId: userId,
@@ -248,7 +248,7 @@ resumeRouter.patch('/:resumeId/status', requireRoles(['RECRUITER']), async (req,
       throw new CustomError(HTTP_STATUS.BAD_REQUEST, '유효하지 않은 지원 상태입니다.');
 
     // DB에서 이력서 찾기 (resumeId is given)
-    const resume = await prisma.resumes.findUnique({
+    const resume = await prisma.resume.findUnique({
       where: { id: +resumeId },
     });
 
@@ -260,14 +260,14 @@ resumeRouter.patch('/:resumeId/status', requireRoles(['RECRUITER']), async (req,
     const resumeLog = await prisma.$transaction(
       async (txn) => {
         // Resumes 테이블에서 변경할 데이터 업데이트
-        await txn.resumes.update({
+        await txn.resume.update({
           where: { id: +resumeId },
           data: {
             applicationStatus: newStatus,
           },
         });
         // ResumeLogs 테이블에 변경 히스토리 삽입
-        return await txn.resumeLogs.create({
+        return await txn.resumeLog.create({
           data: {
             id: +resumeId,
             recruiterId: recruiterId,
@@ -303,7 +303,7 @@ resumeRouter.get('/:resumeId/logs', requireRoles(['RECRUITER']), async (req, res
     const { resumeId } = req.params;
 
     // 2. DB에서 해당 이력서의 이력서 로그 찾기
-    const resumeLogs = await prisma.resumeLogs.findMany({
+    const resumeLogs = await prisma.resumeLog.findMany({
       where: { id: +resumeId },
       orderBy: { changedAt: 'desc' }, // - 생성일시 기준 최신순으로 조회합니다.
       include: {

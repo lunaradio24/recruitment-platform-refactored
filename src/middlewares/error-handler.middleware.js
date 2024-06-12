@@ -1,4 +1,5 @@
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { MESSAGES } from '../constants/message.constant.js';
 
 const errorHandler = (err, req, res, next) => {
   switch (err.name) {
@@ -12,12 +13,12 @@ const errorHandler = (err, req, res, next) => {
     // JWT verify method에서 발생한 에러 처리
     case 'TokenExpiredError':
       return res
-        .status(HTTP_STATUS.BAD_REQUEST)
-        .json({ status: HTTP_STATUS.BAD_REQUEST, message: '인증 정보가 만료되었습니다.' });
+        .status(HTTP_STATUS.UNAUTHORIZED)
+        .json({ status: HTTP_STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.COMMON.JWT.EXPIRED });
     case 'JsonWebTokenError':
       return res
-        .status(HTTP_STATUS.BAD_REQUEST)
-        .json({ status: HTTP_STATUS.BAD_REQUEST, message: '인증 정보가 유효하지 않습니다.' });
+        .status(HTTP_STATUS.UNAUTHORIZED)
+        .json({ status: HTTP_STATUS.UNAUTHORIZED, message: MESSAGES.AUTH.COMMON.JWT.INVALID });
 
     // CustomError로 받은 에러 처리
     case 'CustomError':
