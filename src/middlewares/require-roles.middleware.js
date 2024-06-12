@@ -9,13 +9,13 @@ const requireRoles = (allowedRoles) => {
 
       // 사용자의 역할이 허용된 역할 목록에 포함되는지 확인
       if (!allowedRoles.includes(role)) {
-        throw new HttpError(MESSAGES.AUTH.COMMON.ROLE.NO_ACCESS_RIGHT);
+        throw new HttpError.Forbidden(MESSAGES.AUTH.COMMON.ROLE.NO_ACCESS_RIGHT);
       }
 
       // 허용된 경우 다음 미들웨어로 진행
       next();
 
-      // 허용되지 않은 경우 발생한 에러는 다음 미들웨어에서 처리
+      // 허용되지 않은 경우 발생한 에러 처리
     } catch (error) {
       next(error);
     }
