@@ -29,7 +29,7 @@ export const MESSAGES = {
         INVALID: '인증 정보가 유효하지 않습니다.',
       },
       ROLE: {
-        BLOCKED_USER: '접근 권한이 없습니다.',
+        NO_ACCESS_RIGHT: '접근 권한이 없습니다.',
       },
     },
     SIGN_UP: {
