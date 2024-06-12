@@ -1,19 +1,21 @@
-import { HTTP_STATUS } from '../constants/http-status.constant.js';
-import { CustomError } from '../utils/custom-error.util.js';
+import { MESSAGES } from '../constants/message.constant.js';
+import { HttpError } from '../errors/http.error.js';
 
 const requireRoles = (allowedRoles) => {
   return async (req, res, next) => {
     try {
-      // 1. Authorization 미들웨어를 통해 사용자 정보 가져오기
+      // 사용자 정보 가져오기
       const { role } = req.user;
 
-      // 2. 사용자의 역할이 허용된 역할 목록에 포함되는지 확인
-      if (!allowedRoles.includes(role)) throw new CustomError(HTTP_STATUS.FORBIDDEN, '접근 권한이 없습니다.');
+      // 사용자의 역할이 허용된 역할 목록에 포함되는지 확인
+      if (!allowedRoles.includes(role)) {
+        throw new HttpError(MESSAGES.AUTH.COMMON.ROLE.NO_ACCESS_RIGHT);
+      }
 
-      // 3. 역할이 허용된 경우 다음 미들웨어로 진행
+      // 허용된 경우 다음 미들웨어로 진행
       next();
 
-      // 4. 발생한 에러는 catch로 받아서 다음 미들웨어에서 처리
+      // 허용되지 않은 경우 발생한 에러는 다음 미들웨어에서 처리
     } catch (error) {
       next(error);
     }
