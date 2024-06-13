@@ -1,14 +1,17 @@
-import { prisma } from '../utils/prisma.util.js';
 import { Prisma } from '@prisma/client';
 
-export class ResumesRepository {
+export class ResumeRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
+
   createResume = async (authorId, title, content) => {
-    const createdResume = await prisma.resume.create({ data: { authorId, title, content } });
+    const createdResume = await this.prisma.resume.create({ data: { authorId, title, content } });
     return createdResume;
   };
 
   findAllResumes = async (authorId, filterOption, sortOption) => {
-    const resumes = await prisma.resume.findMany({
+    const resumes = await this.prisma.resume.findMany({
       where: {
         authorId: authorId,
         applicationStatus: filterOption,
@@ -24,7 +27,7 @@ export class ResumesRepository {
   };
 
   findResumeById = async (resumeId) => {
-    const resume = await prisma.resume.findUnique({
+    const resume = await this.prisma.resume.findUnique({
       where: { id: Number(resumeId) },
       include: { author: true },
     });
@@ -32,7 +35,7 @@ export class ResumesRepository {
   };
 
   updateResume = async (resumeId, title, content) => {
-    const updatedResume = await prisma.resume.update({
+    const updatedResume = await this.prisma.resume.update({
       where: { id: Number(resumeId) },
       data: { title, content },
     });
@@ -40,12 +43,12 @@ export class ResumesRepository {
   };
 
   deleteResume = async (resumeId) => {
-    await prisma.resume.delete({ where: { id: Number(resumeId) } });
+    await this.prisma.resume.delete({ where: { id: Number(resumeId) } });
   };
 
   updateStatus = async (resumeId, recruiterId, prevStatus, newStatus, reason) => {
     // 이력서 지원 상태 수정 & 이력서 로그 생성 (transaction으로 묶어서 실행)
-    const resumeLog = await prisma.$transaction(
+    const resumeLog = await this.prisma.$transaction(
       async (txn) => {
         // Resumes 테이블에서 지원 상태 업데이트
         await txn.resume.update({
@@ -72,7 +75,7 @@ export class ResumesRepository {
   };
 
   findResumeLogs = async (resumeId) => {
-    const resumeLogs = await prisma.resumeLog.findMany({
+    const resumeLogs = await this.prisma.resumeLog.findMany({
       where: { resumeId: Number(resumeId) },
       orderBy: { changedAt: 'desc' },
       include: { recruiter: true },

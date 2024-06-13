@@ -1,23 +1,25 @@
-import { prisma } from '../utils/prisma.util.js';
+export class UserRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
 
-export class UsersRepository {
   findAllUsers = async () => {
-    const users = await prisma.user.findMany();
+    const users = await this.prisma.user.findMany();
     return users;
   };
 
   findUserById = async (userId) => {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
     return user;
   };
 
   findUserByEmail = async (email) => {
-    const user = await prisma.user.findUnique({ where: { email: email } });
+    const user = await this.prisma.user.findUnique({ where: { email: email } });
     return user;
   };
 
   createUser = async (email, password, name) => {
-    const createdUser = await prisma.user.create({
+    const createdUser = await this.prisma.user.create({
       data: {
         email,
         password,

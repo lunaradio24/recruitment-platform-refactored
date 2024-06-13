@@ -1,9 +1,10 @@
-import { AuthService } from '../services/auth.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
 export class AuthController {
-  authService = new AuthService(); // Post 서비스를 클래스를 컨트롤러 클래스의 멤버 변수로 할당합니다.
+  constructor(authService) {
+    this.authService = authService;
+  }
 
   signUp = async (req, res, next) => {
     try {

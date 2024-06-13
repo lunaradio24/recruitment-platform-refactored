@@ -1,14 +1,15 @@
-import { ResumesRepository } from '../repositories/resumes.repository.js';
 import { HttpError } from '../errors/http.error.js';
 import { MESSAGES } from '../constants/message.constant.js';
 import { APPLICATION_STATUSES } from '../constants/resume.constant.js';
 import { resumeFlatter, resumeLogFlatter } from '../utils/resume.util.js';
 
-export class ResumesService {
-  resumesRepository = new ResumesRepository();
+export class ResumeService {
+  constructor(resumeRepository) {
+    this.resumeRepository = resumeRepository;
+  }
 
   createResume = async (authorId, title, content) => {
-    const createdResume = await this.resumesRepository.createResume(authorId, title, content);
+    const createdResume = await this.resumeRepository.createResume(authorId, title, content);
     return createdResume;
   };
 
@@ -24,7 +25,7 @@ export class ResumesService {
     const sortOption = sort && sort.toLowerCase() === 'asc' ? 'asc' : 'desc';
 
     // 이력서 조회
-    const resumes = await this.resumesRepository.findAllResumes(authorId, filterOption, sortOption);
+    const resumes = await this.resumeRepository.findAllResumes(authorId, filterOption, sortOption);
 
     // 평탄화
     const flattedResumes = resumes ? resumes.map((resume) => resumeFlatter(resume)) : [];
@@ -33,7 +34,7 @@ export class ResumesService {
 
   getResumeById = async (userId, role, resumeId) => {
     // 이력서 조회
-    const resume = await this.resumesRepository.findResumeById(resumeId);
+    const resume = await this.resumeRepository.findResumeById(resumeId);
     if (!resume) throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 이력서 작성자인지 확인
@@ -48,32 +49,32 @@ export class ResumesService {
 
   updateResume = async (userId, resumeId, title, content) => {
     // 이력서 조회
-    const resume = await this.resumesRepository.findResumeById(resumeId);
+    const resume = await this.resumeRepository.findResumeById(resumeId);
     if (!resume) throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 이력서 작성자인지 확인
     if (userId !== resume.authorId) throw new HttpError.Forbidden(MESSAGES.RESUMES.COMMON.NO_ACCESS_RIGHT);
 
     // 해당 이력서 수정
-    const updatedResume = await this.resumesRepository.updateResume(resumeId, title, content);
+    const updatedResume = await this.resumeRepository.updateResume(resumeId, title, content);
     return updatedResume;
   };
 
   deleteResume = async (userId, resumeId) => {
     // 이력서 조회
-    const resume = await this.resumesRepository.findResumeById(resumeId);
+    const resume = await this.resumeRepository.findResumeById(resumeId);
     if (!resume) throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 
     // 이력서 작성자인지 확인
     if (userId !== resume.authorId) throw new HttpError.Forbidden(MESSAGES.RESUMES.COMMON.NO_ACCESS_RIGHT);
 
     // 해당 이력서 데이터 삭제
-    await this.resumesRepository.deleteResume(resumeId);
+    await this.resumeRepository.deleteResume(resumeId);
   };
 
   updateStatus = async (resumeId, recruiterId, newStatus, reason) => {
     // resumeId로 이력서 조회
-    const resume = await this.resumesRepository.findResumeById(resumeId);
+    const resume = await this.resumeRepository.findResumeById(resumeId);
 
     // 해당 이력서가 존재하지 않을 때
     if (!resume) throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
@@ -85,13 +86,13 @@ export class ResumesService {
     }
 
     // 지원 상태 변경 후 로그 반환
-    const resumeLog = await this.resumesRepository.updateStatus(resumeId, recruiterId, prevStatus, newStatus, reason);
+    const resumeLog = await this.resumeRepository.updateStatus(resumeId, recruiterId, prevStatus, newStatus, reason);
     return resumeLog;
   };
 
   getResumeLogs = async (resumeId) => {
     // 이력서 로그 조회
-    const resumeLogs = await this.resumesRepository.findResumeLogs(resumeId);
+    const resumeLogs = await this.resumeRepository.findResumeLogs(resumeId);
 
     // 평탄화
     const flattedResumeLogs = resumeLogs ? resumeLogs.map((log) => resumeLogFlatter(log)) : [];

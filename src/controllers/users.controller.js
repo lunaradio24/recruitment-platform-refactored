@@ -1,9 +1,10 @@
-import { UsersService } from '../services/users.service.js';
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
-export class UsersController {
-  usersService = new UsersService();
+export class UserController {
+  constructor(userService) {
+    this.userService = userService;
+  }
 
   getMyInfo = async (req, res, next) => {
     try {
