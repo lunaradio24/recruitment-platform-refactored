@@ -1,10 +1,10 @@
-import { UsersRepository } from '../repositories/users.repository.js';
-
-export class UsersService {
-  usersRepository = new UsersRepository();
+export class UserService {
+  constructor(userRepository) {
+    this.userRepository = userRepository;
+  }
 
   getMyInfo = async (userId) => {
-    const user = await this.usersRepository.findUserById(userId);
+    const user = await this.userRepository.findUserById(userId);
     return {
       id: user.id,
       email: user.email,

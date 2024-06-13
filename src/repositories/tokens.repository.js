@@ -1,15 +1,17 @@
-import { prisma } from '../utils/prisma.util.js';
+export class TokenRepository {
+  constructor(prisma) {
+    this.prisma = prisma;
+  }
 
-export class TokensRepository {
   findRefreshTokenByUserId = async (userId) => {
-    const refreshToken = await prisma.refreshToken.findUnique({
+    const refreshToken = await this.prisma.refreshToken.findUnique({
       where: { userId: userId },
     });
     return refreshToken;
   };
 
   createRefreshToken = async (userId, refreshToken) => {
-    await prisma.refreshToken.create({
+    await this.prisma.refreshToken.create({
       data: {
         userId: userId,
         token: refreshToken,
@@ -18,14 +20,14 @@ export class TokensRepository {
   };
 
   updateRefreshToken = async (userId, refreshToken) => {
-    await prisma.refreshToken.update({
+    await this.prisma.refreshToken.update({
       where: { userId: userId },
       data: { token: refreshToken },
     });
   };
 
   deleteRefreshToken = async (userId) => {
-    await prisma.refreshToken.delete({
+    await this.prisma.refreshToken.delete({
       where: { userId: userId },
     });
   };
