@@ -68,6 +68,7 @@ export const MESSAGES = {
         REQUIRED: '지원 상태 변경 사유를 입력해주세요.',
       },
       NOT_FOUND: '이력서가 존재하지 않습니다.',
+      NO_ACCESS_RIGHT: '접근 권한이 없습니다.',
     },
     CREATE: {
       SUCCEED: '이력서 생성에 성공했습니다.',
