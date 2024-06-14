@@ -1,8 +1,7 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { ResumeController } from '../../../src/controllers/resumes.controller.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
-const mockTemplateService = {
+const mockResumeService = {
   create: jest.fn(),
   readMany: jest.fn(),
   readOne: jest.fn(),
@@ -24,9 +23,9 @@ const mockResponse = {
 
 const mockNext = jest.fn();
 
-const templateController = new TemplateController(mockTemplateService);
+const resumeController = new ResumeController(mockResumeService);
 
-describe('TemplateController Unit Test', () => {
+describe('ResumeController Unit Test', () => {
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
 
@@ -34,31 +33,43 @@ describe('TemplateController Unit Test', () => {
     mockResponse.status.mockReturnValue(mockResponse);
   });
 
-  test('create Method', async () => {
+  test('createResume Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('readMany Method', async () => {
+  test('getResumeList Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('readOne Method', async () => {
+  test('getResumeById Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('update Method', async () => {
+  test('updateResume Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('delete Method', async () => {
+  test('deleteResume Method', async () => {
+    // GIVEN
+    // WHEN
+    // THEN
+  });
+
+  test('updateStatus Method', async () => {
+    // GIVEN
+    // WHEN
+    // THEN
+  });
+
+  test('getResumeLogs Method', async () => {
     // GIVEN
     // WHEN
     // THEN

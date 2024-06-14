@@ -1,6 +1,5 @@
 import { beforeEach, describe, jest, test, expect } from '@jest/globals';
-
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
+import { ResumeRepository } from '../../../src/repositories/resumes.repository.js';
 
 const mockPrisma = {
   template: {
@@ -12,38 +11,50 @@ const mockPrisma = {
   },
 };
 
-const templateRepository = new TemplateRepository(mockPrisma);
+const resumeRepository = new ResumeRepository(mockPrisma);
 
-describe('TemplateRepository Unit Test', () => {
+describe('ResumeRepository Unit Test', () => {
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다
   });
 
-  test('create Method', async () => {
+  test('createResume Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('readMany Method', async () => {
+  test('findAllResumes Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('readOne Method', async () => {
+  test('findResumeById Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('update Method', async () => {
+  test('updateResume Method', async () => {
     // GIVEN
     // WHEN
     // THEN
   });
 
-  test('delete Method', async () => {
+  test('deleteResume Method', async () => {
+    // GIVEN
+    // WHEN
+    // THEN
+  });
+
+  test('updateStatus Method', async () => {
+    // GIVEN
+    // WHEN
+    // THEN
+  });
+
+  test('findResumeLogs Method', async () => {
     // GIVEN
     // WHEN
     // THEN

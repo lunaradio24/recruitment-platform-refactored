@@ -3,9 +3,15 @@ export class UserRepository {
     this.prisma = prisma;
   }
 
-  findAllUsers = async () => {
-    const users = await this.prisma.user.findMany();
-    return users;
+  createUser = async (email, password, name) => {
+    const createdUser = await this.prisma.user.create({
+      data: {
+        email,
+        password,
+        name,
+      },
+    });
+    return createdUser;
   };
 
   findUserById = async (userId) => {
@@ -16,16 +22,5 @@ export class UserRepository {
   findUserByEmail = async (email) => {
     const user = await this.prisma.user.findUnique({ where: { email: email } });
     return user;
-  };
-
-  createUser = async (email, password, name) => {
-    const createdUser = await this.prisma.user.create({
-      data: {
-        email,
-        password,
-        name,
-      },
-    });
-    return createdUser;
   };
 }

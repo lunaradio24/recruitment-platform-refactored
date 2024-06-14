@@ -1,4 +1,5 @@
 import { HTTP_STATUS } from '../constants/http-status.constant.js';
+import { HttpError } from '../errors/http.error.js';
 import { MESSAGES } from '../constants/message.constant.js';
 
 export class UserController {
@@ -9,19 +10,21 @@ export class UserController {
   getMyInfo = async (req, res, next) => {
     try {
       // 사용자 정보 가져오기
-      const { userId, email, name, role, createdAt, updatedAt } = req.user;
+      const user = req.user;
+
+      if (!user) throw new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
 
       // 반환 정보
       return res.status(HTTP_STATUS.OK).json({
         status: HTTP_STATUS.OK,
         message: MESSAGES.USERS.READ_ME.SUCCEED,
         data: {
-          userId,
-          email,
-          name,
-          role,
-          createdAt,
-          updatedAt,
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         },
       });
 

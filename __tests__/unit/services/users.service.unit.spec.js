@@ -1,55 +1,57 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { UserService } from '../../../src/services/users.service.js';
+import { dummyUsers } from '../../dummies/users.dummy.js';
+import { HttpError } from '../../../src/errors/http.error.js';
+import { MESSAGES } from '../../../src/constants/message.constant.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
-const mockTemplateRepository = {
-  create: jest.fn(),
-  readMany: jest.fn(),
-  readOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
+const mockUserRepository = {
+  findUserById: jest.fn(),
 };
 
-const templateService = new TemplateService(mockTemplateRepository);
+const userService = new UserService(mockUserRepository);
 
-describe('TemplateService Unit Test', () => {
+describe.each(dummyUsers.slice(1))('UserService Unit Test', (dummyUser) => {
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
   });
 
-  test('create Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+  describe('getMyInfo Method', () => {
+    test('내 정보 조회 성공', async () => {
+      // GIVEN
+      const expectedUser = dummyUser;
+      const userId = expectedUser.id;
+      mockUserRepository.findUserById.mockResolvedValue(expectedUser);
 
-  test('readMany Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+      // WHEN
+      const foundUser = await userService.getMyInfo(userId);
 
-  test('readOne Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+      // THEN
+      expect(foundUser).toEqual({
+        id: expectedUser.id,
+        email: expectedUser.email,
+        name: expectedUser.name,
+        role: expectedUser.role,
+        createdAt: expectedUser.createdAt,
+        updatedAt: expectedUser.updatedAt,
+      });
+      expect(mockUserRepository.findUserById).toHaveBeenCalledTimes(1);
+      expect(mockUserRepository.findUserById).toHaveBeenCalledWith(userId);
+    });
 
-  test('readOne Method - 이력서 없는 경우', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+    test('Access Token 검증 미들웨어로부터 넘겨받은 req.user에 들어있는 userId로 조회되는 사용자가 없는 경우', async () => {
+      // GIVEN
+      const expectedUser = dummyUser;
+      const nonExistentUserId = 999999999999;
+      mockUserRepository.findUserById.mockResolvedValue(expectedUser);
 
-  test('update Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
-
-  test('delete Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+      // WHEN
+      try {
+        await userService.getMyInfo(nonExistentUserId);
+      } catch (error) {
+        // THEN
+        expect(error).toBeInstanceOf(HttpError.NotFound);
+        expect(error.message).toBe(MESSAGES.AUTH.COMMON.JWT.NO_USER);
+      }
+    });
   });
 });

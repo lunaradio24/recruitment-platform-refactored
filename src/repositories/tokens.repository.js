@@ -25,10 +25,4 @@ export class TokenRepository {
       data: { token: refreshToken },
     });
   };
-
-  deleteRefreshToken = async (userId) => {
-    await this.prisma.refreshToken.delete({
-      where: { userId: userId },
-    });
-  };
 }

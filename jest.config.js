@@ -5,4 +5,11 @@ export default {
   verbose: true,
   // *.test.js, *.spec.js 파일만 테스트 파일로 인식해서 실행합니다.
   testRegex: '.*\\.(test|spec)\\.js$',
+
+  transform: {
+    '^.+\\.jsx?$': 'babel-jest',
+  },
+  moduleNameMapper: {
+    '^bcrypt$': './__tests__/__mocks__/bcrypt.js',
+  },
 };
