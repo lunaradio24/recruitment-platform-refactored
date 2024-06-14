@@ -11,6 +11,8 @@
 ```sh
 .
 ├── __tests__
+|   ├── __mocks__
+|   │   └── bcrypt.js
 │   ├── dummies
 │   │   ├── resumes.dummy.js
 │   │   └── users.dummy.js
@@ -60,14 +62,14 @@
 │   │   └── prisma.util.js
 │   └── app.js
 ├── .env // Git에는 올라가지 않습니다.
-├── .env.example // Git에 올라갑니다. .env의 복사본으로 Key만 있고 Value는 삭제합니다.
+├── .env.example // Git에 올라갑니다. .env의 복사본으로 Key만 있고 Value는 삭제된 상태입니다.
 ├── .gitignore
 ├── .prettierrc
 ├── eslint.config.js
 ├── jest.config.js
 ├── package.json
 ├── README.md
-└── yarn.lock // npm을 사용하면 package-lock.json
+└── yarn.lock
 ```
 
 ### 실행 방법
