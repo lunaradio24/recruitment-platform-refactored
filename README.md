@@ -1,7 +1,7 @@
 # 채용 플랫폼 백엔드
 
 ### 개요
-채용자 중심 이력서 관리 플랫폼
+- 채용자 중심 이력서 관리 플랫폼
 
 ### 기능
 - APPLICANT: 자신의 이력서 CRUD
@@ -11,8 +11,8 @@
 ```sh
 .
 ├── __tests__
-|   ├── __mocks__
-|   │   └── bcrypt.js
+│   ├── __mocks__
+│   │   └── bcrypt.js
 │   ├── dummies
 │   │   ├── resumes.dummy.js
 │   │   └── users.dummy.js
