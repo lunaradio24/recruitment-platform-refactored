@@ -1,20 +1,16 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { UserController } from '../../../src/controllers/users.controller.js';
+import { dummyUsers } from '../../dummies/users.dummy.js';
+import { HttpError } from '../../../src/errors/http.error.js';
+import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
+import { MESSAGES } from '../../../src/constants/message.constant.js';
 
-// TODO: template 이라고 되어 있는 부분을 다 올바르게 수정한 후 사용해야 합니다.
-
-const mockTemplateService = {
-  create: jest.fn(),
-  readMany: jest.fn(),
-  readOne: jest.fn(),
-  update: jest.fn(),
-  delete: jest.fn(),
+const mockUserService = {
+  getMyInfo: jest.fn(),
 };
 
 const mockRequest = {
   user: jest.fn(),
-  body: jest.fn(),
-  query: jest.fn(),
-  params: jest.fn(),
 };
 
 const mockResponse = {
@@ -24,43 +20,57 @@ const mockResponse = {
 
 const mockNext = jest.fn();
 
-const templateController = new TemplateController(mockTemplateService);
+const userController = new UserController(mockUserService);
 
-describe('TemplateController Unit Test', () => {
+describe.each(dummyUsers.slice(1))('UserController Unit Test', (dummyUser) => {
   beforeEach(() => {
     jest.resetAllMocks(); // 모든 Mock을 초기화합니다.
-
+    mockRequest.user = dummyUser;
     // mockResponse.status의 경우 메서드 체이닝으로 인해 반환값이 Response(자신: this)로 설정되어야합니다.
     mockResponse.status.mockReturnValue(mockResponse);
+    mockResponse.json.mockReturnValue(mockResponse);
   });
 
-  test('create Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+  // 내 정보 조회
+  describe('getMyInfo Method', () => {
+    test('내 정보 조회 성공', async () => {
+      // GIVEN
+      const expectedUser = mockRequest.user;
+      const expectedUserInfo = {
+        userId: expectedUser.id,
+        email: expectedUser.email,
+        name: expectedUser.name,
+        role: expectedUser.role,
+        createdAt: expectedUser.createdAt,
+        updatedAt: expectedUser.updatedAt,
+      };
+      const expectedResponse = {
+        status: HTTP_STATUS.OK,
+        message: MESSAGES.USERS.READ_ME.SUCCEED,
+        data: expectedUserInfo,
+      };
 
-  test('readMany Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+      // WHEN
+      await userController.getMyInfo(mockRequest, mockResponse, mockNext);
 
-  test('readOne Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+      // THEN
+      expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+      expect(mockResponse.json).toHaveBeenCalledWith(expectedResponse);
+      expect(mockNext).not.toHaveBeenCalled();
+    });
 
-  test('update Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
-  });
+    test('내 정보 조회 실패', async () => {
+      // GIVEN
+      mockRequest.user = undefined;
+      const error = new HttpError.Unauthorized(MESSAGES.AUTH.COMMON.UNAUTHORIZED);
 
-  test('delete Method', async () => {
-    // GIVEN
-    // WHEN
-    // THEN
+      // WHEN
+      await userController.getMyInfo(mockRequest, mockResponse, mockNext);
+
+      // THEN
+      expect(mockResponse.status).not.toHaveBeenCalled();
+      expect(mockResponse.json).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledWith(error);
+    });
   });
 });
